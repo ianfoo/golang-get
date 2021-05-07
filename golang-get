@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+#
+# Drop this in your path to install the latest macOS version of Go from
+# golang.org/dl. The script will ask for your password when it reaches the
+# point at which it needs to run the installer, since this requires sudo
+# permission. 
+#
+# If you need to install a specific version, provide it as an argument for
+# invocation, like so:
+#
+# $ golang-get 1.15.12
+
+set -Eeuo pipefail
+
+go-get-latest-version-httpie () {
+  http -F golang.org/VERSION m==text
+}
+
+go-get-latest-package-httpie () {
+  local package=$1
+  http -q --download golang.org/dl/${package}
+}
+
+go-get-latest-version-curl () {
+  curl -L "https://golang.org/VERSION?m=text"
+}
+
+go-get-latest-package-curl () {
+  local package=$1
+  curl -sLO "https://golang.org/dl/${package}"
+}
+
+cleanup () {
+  local package=${1:-}
+  if [[ $package != "" ]]; then
+    rm -f $1
+  fi
+  cd - > /dev/null
+}
+
+install-latest () {
+  cd $TMPDIR
+  trap cleanup EXIT
+  local arch=$1
+  local version=${2:-}
+
+  local client=httpie
+  if ! http --version >&/dev/null; then
+    client=curl
+  fi
+ 
+  if [[ -z $version ]]; then
+    version=$(go-get-latest-version-$client)
+  fi
+
+  # Make sure the version starts with "go" (e.g., "go1.16.4") since that's how
+  # they're named on the download site. This is mainly for the case when a
+  # specific version has been passed in, to allow a user to type "golang-get
+  # 1.16.4" on the command line, rather than having to type "go1.16.4" which
+  # would be silly. But they can still do that if they want!
+  [[ $version =~ ^go ]] || version="go${version}"
+
+  [[ -z $version ]] && return 1
+  local package=${version}.darwin-${arch}.pkg
+
+  echo "fetching $version"
+  if ! go-get-latest-package-$client "$package"; then
+    echo >&2 "unable to install $version (bad version?)"
+    return 1
+  fi
+
+  trap "cleanup $package" EXIT
+  echo "installing $version"
+  sudo installer -pkg "$package" -target / && echo "installed $version"
+}
+
+arch=amd64
+if [[ $(uname -m) != 'x86_64' ]]; then
+  arch=arm64
+fi
+
+version=${1:-}
+
+install-latest "$arch" "$version"
