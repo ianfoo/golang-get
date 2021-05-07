@@ -6,6 +6,9 @@ site](https://golang.org/dl) and install it. This may be useful if you do not
 use [Homebrew](https://brew.sh) to manage your Go installation. The script will
 detect your Mac's architecture and download the correct package for it.
 
+The script will ask for your password since `/usr/sbin/installer` must be run
+with sudo.
+
 ## Installing
 
 Either clone this repository and copy or move `golang-get` to a directory in
