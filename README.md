@@ -6,6 +6,16 @@ site](https://golang.org/dl) and install it. This may be useful if you do not
 use [Homebrew](https://brew.sh) to manage your Go installation. The script will
 detect your Mac's architecture and download the correct package for it.
 
+## Installing
+
+Either clone this repository and copy or move `golang-get` to a directory in
+your `$PATH`, or change to a directory in your $PATH and run the following
+command:
+
+```
+curl -OLSs https://raw.githubusercontent.com/ianfoo/golang-get/main/golang-get && chmod 755 golang-get
+```
+
 ## Running
 
 Simply run the following command:
