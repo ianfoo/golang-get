@@ -51,6 +51,9 @@ install-latest () {
  
   if [[ -z $version ]]; then
     version=$(go-get-latest-version-$client)
+
+    # If version is still empty, getting the latest version failed.
+    [[ -z $version ]] && return 1
   fi
 
   # Make sure the version starts with "go" (e.g., "go1.16.4") since that's how
@@ -60,7 +63,6 @@ install-latest () {
   # would be silly. But they can still do that if they want!
   [[ $version =~ ^go ]] || version="go${version}"
 
-  [[ -z $version ]] && return 1
   local package=${version}.darwin-${arch}.pkg
 
   echo "fetching $version"
