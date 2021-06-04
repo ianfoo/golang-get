@@ -65,15 +65,15 @@ install-latest () {
 
   local package=${version}.darwin-${arch}.pkg
 
-  echo "fetching $version"
+  echo "📡 fetching $version"
   if ! go-get-latest-package-$client "$package"; then
-    echo >&2 "unable to install $version (bad version?)"
+    echo >&2 "💥 unable to install $version (bad version?)"
     return 1
   fi
 
   trap "cleanup $package" EXIT
-  echo "installing $version"
-  sudo installer -pkg "$package" -target / && echo "installed $version"
+  echo "💻 installing $version"
+  sudo installer -pkg "$package" -target / && echo "🥳 installed $version"
 }
 
 arch=amd64
