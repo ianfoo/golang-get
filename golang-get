@@ -12,22 +12,25 @@
 
 set -Eeuo pipefail
 
+VERSION_URL=https://go.dev/VERSION
+DOWNLOAD_URL=https://go.dev/dl
+
 go-get-latest-version-httpie () {
-  http -F golang.org/VERSION m==text
+  http -F "${VERSION_URL}" m==text
 }
 
 go-get-latest-package-httpie () {
   local package=$1
-  http -q --download golang.org/dl/${package}
+  http -q --download "${DOWNLOAD_URL}/${package}"
 }
 
 go-get-latest-version-curl () {
-  curl -L "https://golang.org/VERSION?m=text"
+  curl -L "${VERSION_URL}?m=text"
 }
 
 go-get-latest-package-curl () {
   local package=$1
-  curl -sLO "https://golang.org/dl/${package}"
+  curl -sLO "${DOWNLOAD_URL}/${package}"
 }
 
 cleanup () {
